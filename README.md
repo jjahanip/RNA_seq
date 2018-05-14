@@ -11,7 +11,7 @@ This will create 4 folders with `fastq.gz` files. Unzip the files in each folder
 tar -xzf *.fastq.gz
 ```
 
-### 1. Prepare the Dataset:
+### 2. Prepare the Dataset:
 1. Download the __cellranger__ sofware from [here](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/count).
 
 2. Download the __GRCh38__ as the reference.
@@ -26,5 +26,12 @@ cellranger count --id=MantonBM1 \
 
 This will create a folder `MantonBM1`. locate the `filtered_gene_bc_matrices_h5.h5` file.
 
-### 2. Run Non-Parametric Clustering:
-run `main.m`
+### 3. Run Non-Parametric Clustering:
+You have following parameters to tune for different setting:
+- cutoff_thresh  : Remove genes that the sum of counts is below threshold
+- dim_red_method: Dimension reduction method { 'PCA' , 'SNE'}
+- red_dim       : Reduced dimension
+
+It will visualize samples in a color-coded manner like this:
+
+<img src="vis.png" widht="500" height="500">
