@@ -1,10 +1,11 @@
 clc; clear;
 setPath();
+
 tic
 filename = 'D:\Jahandar\Lab\images\immune\results\MantonBM1\outs\filtered_gene_bc_matrices_h5.h5';
-cutoff_thres = 0;       % remove genes that the sum of counts is below thres
+cutoff_thres = 100;       % remove genes that the sum of counts is below thres
 dim_red_method = 'SNE';   % Dimension Reduction Method 'PCA' | 'SNE'
-red_dim = 3;              % reduce the dataset features with PCA
+red_dim = 3;              % reduce the dataset features to this dim
 normalize = 0;
 
 %% Load data
@@ -21,6 +22,15 @@ data.indices = hdf5read(filename, '/GRCh38/indices') + 1;
 data.indptr = hdf5read(filename, '/GRCh38/indptr') + 1;
 data.shape = hdf5read(filename, '/GRCh38/shape');
 
+% change gene_names to array
+gene_names = cell(length(data.gene_names), 1);
+for i = 1:length(data.gene_names)
+    gene_names{i} = data.gene_names(i).Data;
+end
+data.gene_names = gene_names;
+clear gene_names 
+
+% create the data_matrix
 data_matrix = zeros(data.shape', 'int32');
 j = 1;
 for i = 1:length(data.data)
@@ -30,6 +40,7 @@ for i = 1:length(data.data)
     data_matrix(data.indices(i), j) = data.data(i);
 end
 data_matrix = (double(data_matrix'));
+data.shape = size(data_matrix);
 fprintf('samples = %d\n', data.shape(1));
 fprintf('genese = %d\n', data.shape(2));
 fprintf('data shape = [%d,%d]\n', data.shape);
@@ -63,7 +74,7 @@ if  exist('cutoff_thres', 'var')
     fprintf('data shape = [%d,%d]\n', data.shape);
 end
 fprintf('=============================================================\n');
-
+data.data_matrix = data_matrix;
 %% Dimension Reduction:
 switch dim_red_method
     case 'PCA'
@@ -122,7 +133,7 @@ UZ = sort(unique(Z_hat));
 for i = 1:length(UZ)
     labels(Z_hat==UZ(i)) = i;
 end
-
+data.labels = labels';
 num_labels = length(unique(labels));    % number of labels (derived clusters from DPMM)
 fprintf('Clustering finished with %d clusters\n', num_labels);
 
@@ -137,6 +148,7 @@ end
 fprintf('=============================================================\n');
 %% Visualization:
 fprintf('Visualizing results using t-SNE...\n');
+figure('units','normalized','outerposition',[0 0 1 1]);
 cl_map_clust = hsv (num_labels);                                            % create a color map based on different clusters
 tsne_labels = cl_map_clust(labels,:);
 if data.shape(2) ~= 3
@@ -157,6 +169,22 @@ colorbar('Ticks', linspace(1/(num_labels * 2),...
          'TickLabels', ticks);
 title('Visualizing t-SNE results')
 
+uicontrol('style', 'text',...
+          'Units', 'normalized',...
+          'Position', [.05 .915 .07 .02],...
+          'String','Genes Names (Space Separate)');
+uicontrol('style', 'edit',...
+          'Tag', 'gene_name',...
+          'Units', 'normalized',...
+          'Position', [.05 .9 .05 .02]);
+
+uicontrol('style', 'pushbutton',...
+          'Units', 'normalized',...
+          'Position', [.1 .9 .02 .02],...
+          'String','go',...
+          'Callback',{@go_Callback, data});
+
 fprintf('=============================================================\n');
+%%
 fprintf('pipeline finished.\n');
 toc

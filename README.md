@@ -21,10 +21,12 @@ tar -xzf *.fastq.gz
 cellranger count --id=MantonBM1 \
 --fastqs=2a87dc5c-0c3c-4d91-a348-5d784ab48b92 \
 --transcriptome=<path_to_reference_file> \
---sample=MantonBM1_HiSeq_1,MantonBM1_HiSeq_2,MantonBM1_HiSeq_3,MantonBM1_HiSeq_4,MantonBM1_HiSeq_5,MantonBM1_HiSeq_6,MantonBM1_HiSeq_7
+--sample=MantonBM1_HiSeq_1,MantonBM1_HiSeq_2,MantonBM1_HiSeq_3,MantonBM1_HiSeq_4,MantonBM1_HiSeq_5,MantonBM1_HiSeq_6,MantonBM1_HiSeq_7,MantonBM1_HiSeq_8
 ```
 
-This will create a folder `MantonBM1`. locate the `filtered_gene_bc_matrices_h5.h5` file.
+This will create a folder `MantonBM1`. 
+
+Locate the __`filtered_gene_bc_matrices_h5.h5`__ file.
 
 ### 3. Run Non-Parametric Clustering:
 You have following parameters to tune for different setting:
@@ -34,4 +36,8 @@ You have following parameters to tune for different setting:
 
 It will visualize samples in a color-coded manner like this:
 
-<img src="vis.png" widht="500" height="500">
+<img src="imgs/tsne.png" widht="500" height="500">
+
+You can provide gene names (space separate the names) and see the heatmap of the sum of expressesd genes in each cluster.
+
+<img src="imgs/heatmap.png" widht="500" height="500">
